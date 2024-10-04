@@ -13,6 +13,7 @@
 #define _ARBOL_H
 
 #include "fstream"
+#include "iostream"
 #include "nodo.h"
 #include "vector"
 #include "stack"
@@ -25,14 +26,17 @@ public:
   int FuncionHeuristica(Nodo* nodo);
   Nodo* NodoAbierto(int i, int j); // for each nodo in nodos_abiertos: if nodo.pos_i == i && nodo.pos_j == j return nodo;
   Nodo* NodoCerrado(int i, int j);
-
+  void PrintMaze();
 private:
+  std::pair<int,int> inicio_;
+  std::pair<int,int> fin_;
   // Imprimimos la salida por un fichero
   // std::ofstream fichero_salida{"salida.txt"};
+  int n_filas_;
+  int n_columnas_;
   std::vector<std::vector<int>> maze_;
   std::vector<Nodo*> nodos_abiertos_;
   std::vector<Nodo*> nodos_cerrados_;
-
 
 };
 
