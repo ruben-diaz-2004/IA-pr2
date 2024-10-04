@@ -20,10 +20,20 @@
 class Maze {
 public:
   Maze(std::fstream& fichero_entrada);
+  void FuncionCoste(Nodo* nodo);
+  int CosteAcumulado(Nodo* nodo);
+  int FuncionHeuristica(Nodo* nodo);
+  Nodo* NodoAbierto(int i, int j); // for each nodo in nodos_abiertos: if nodo.pos_i == i && nodo.pos_j == j return nodo;
+  Nodo* NodoCerrado(int i, int j);
 
 private:
   // Imprimimos la salida por un fichero
   // std::ofstream fichero_salida{"salida.txt"};
+  std::vector<std::vector<int>> maze_;
+  std::vector<Nodo*> nodos_abiertos_;
+  std::vector<Nodo*> nodos_cerrados_;
+
+
 };
 
 

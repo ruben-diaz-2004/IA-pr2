@@ -18,20 +18,19 @@ class Nodo {
 public:
   using position = std::pair<int, int>;
 
-  Nodo(const position& identificador, const double& coste, Nodo* padre) : identificador_{identificador}, coste_{coste}, padre_{padre} {}
-  Nodo(const position& identificador, const double& coste) : identificador_{identificador}, coste_{coste}, padre_{nullptr} {}
+  Nodo(const position& identificador, Nodo* padre) : identificador_{identificador}, padre_{padre} {}
+  Nodo(const position& identificador) : identificador_{identificador}, padre_{nullptr} {}
   position GetIdentificador() const { return identificador_; }
   double GetCoste() const { return coste_; }
   Nodo* GetPadre() const { return padre_; }
   void SetPadre(Nodo* padre) { padre_ = padre; }
-  void NuevoHijo(Nodo* hijo) { hijos_.push_back(hijo); }
-  Nodo* GetHijo(int i) { return hijos_[i]; }
-  int GetNumeroHijos() { return hijos_.size(); }
+
 private:
   position identificador_;
   double coste_;
+  int movimiento_;
+  int heuristica_;
   Nodo* padre_;
-  std::vector<Nodo*> hijos_;
 };
 
 
