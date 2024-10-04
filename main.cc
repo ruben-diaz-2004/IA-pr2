@@ -18,8 +18,8 @@ int main(int argc, char* argv[]) {
   std::fstream fichero_de_entrada{argv[1]};
 
   Maze maze(fichero_de_entrada);
-  maze.PrintMaze();
   maze.SolveMaze();
+  maze.PrintMaze();
 
   return 0;
 }

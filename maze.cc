@@ -52,6 +52,7 @@ bool Maze::SolveMaze() {
     nodos_cerrados_.push_back(nodo_actual);
     if (nodo_actual->GetIdentificador() == fin_) {
       std::cout << "Camino encontrado" << std::endl;
+      ReconstruirCamino(nodo_actual);
       return true;
     }
     for (int i{-1}; i <= 1; ++i) {
@@ -86,13 +87,29 @@ bool Maze::SolveMaze() {
 }
 
 
+
+void Maze::ReconstruirCamino(Nodo* nodo) {
+  Nodo* nodo_actual = nodo;
+  while (nodo_actual->GetPadre() != nullptr) {
+    maze_[nodo_actual->GetIdentificador().first][nodo_actual->GetIdentificador().second] = 2;
+    nodo_actual = nodo_actual->GetPadre();
+  }
+  maze_[nodo_actual->GetIdentificador().first][nodo_actual->GetIdentificador().second] = 2;
+}
+
+
+
+
 Nodo* Maze::BuscarNodoMenorCoste() {
   Nodo* nodo_menor_coste = nodos_abiertos_[0];
+  int index{0};
   for (int i = 1; i < nodos_abiertos_.size(); i++) {
     if (nodos_abiertos_[i]->GetCoste() < nodo_menor_coste->GetCoste()) {
       nodo_menor_coste = nodos_abiertos_[i];
+      index = i;
     }
   }
+  nodos_abiertos_.erase(nodos_abiertos_.begin() + index);
   return nodo_menor_coste;
 }
 // void Maze::PrintMaze() {
@@ -169,19 +186,19 @@ int Maze::CosteAcumulado(Nodo* nodo) {
   int coste_movimiento{0};
   Nodo* padre = nodo->GetPadre();
   if (padre->GetIdentificador().first == nodo->GetIdentificador().first || padre->GetIdentificador().second == nodo->GetIdentificador().second) {
-    coste_movimiento = padre->GetCoste() + 5;
+    coste_movimiento = padre->GetCosteMovimiento() + 5;
   } else {
-    coste_movimiento = padre->GetCoste() + 7;
+    coste_movimiento = padre->GetCosteMovimiento() + 7;
   }
   nodo->SetCosteMovimiento(coste_movimiento);
-  std::cout << "Coste acumulado: " << coste_movimiento << std::endl;
+  // std::cout << "Coste acumulado: " << coste_movimiento << std::endl;
   return coste_movimiento;
 }
 
 
 int Maze::FuncionHeuristica(Nodo* nodo) {
   int coste = (abs(nodo->GetIdentificador().first - fin_.first) + abs(nodo->GetIdentificador().second - fin_.second)) * 3;
-  std::cout << "Heuristica: " << coste << std::endl;
+  // std::cout << "Heuristica: " << coste << std::endl;
   nodo->SetHeuristica(coste);
   return coste;
 }
