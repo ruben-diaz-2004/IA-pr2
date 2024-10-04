@@ -18,16 +18,20 @@ public:
   using position = std::pair<int, int>;
 
   Nodo(const position& identificador, Nodo* padre) : identificador_{identificador}, padre_{padre} {}
-  Nodo(const position& identificador) : identificador_{identificador}, padre_{nullptr} {}
+  Nodo(const position& identificador) : identificador_{identificador}, padre_{nullptr}, coste_movimiento_{0} {}
   position GetIdentificador() const { return identificador_; }
   double GetCoste() const { return coste_; }
   Nodo* GetPadre() const { return padre_; }
+  int GetCosteMovimiento() const { return coste_movimiento_; }
   void SetPadre(Nodo* padre) { padre_ = padre; }
+  void SetCoste(const double& coste) { coste_ = coste; }
+  void SetCosteMovimiento(const int& coste_movimiento) { coste_movimiento_ = coste_movimiento; }
+  void SetHeuristica(const int& heuristica) { heuristica_ = heuristica; }
 
 private:
   position identificador_;
   double coste_;
-  int movimiento_;
+  int coste_movimiento_;
   int heuristica_;
   Nodo* padre_;
 };

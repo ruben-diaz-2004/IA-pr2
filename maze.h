@@ -26,6 +26,7 @@ public:
   Nodo* NodoAbierto(int i, int j); // for each nodo in nodos_abiertos: if nodo.pos_i == i && nodo.pos_j == j return nodo;
   Nodo* NodoCerrado(int i, int j);
   void PrintMaze();
+  Nodo* BuscarNodoMenorCoste();
 private:
   std::pair<int,int> inicio_;
   std::pair<int,int> fin_;

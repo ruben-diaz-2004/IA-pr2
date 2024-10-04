@@ -19,6 +19,7 @@ int main(int argc, char* argv[]) {
 
   Maze maze(fichero_de_entrada);
   maze.PrintMaze();
+  maze.SolveMaze();
 
   return 0;
 }
