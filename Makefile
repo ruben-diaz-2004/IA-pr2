@@ -12,13 +12,13 @@ CXXFLAGS = -Wall -std=c++17 -g
 
 
 
-all: NoInformadas
+all: Informadas
 
-NoInformadas: main.cc arbol.cc
+Informadas: main.cc maze.cc
 		$(CXX) $(CXXFLAGS) -o $@ $^
 	
 
 	
 .PHONY: all clean
 clean:
-		rm -f NoInformadas
+		rm -f Informadas

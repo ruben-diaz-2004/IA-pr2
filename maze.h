@@ -9,18 +9,17 @@
   * @date 01/10/2024
   */
 
-#ifndef _ARBOL_H
-#define _ARBOL_H
+#ifndef _MAZE_H
+#define _MAZE_H
 
-#include "fstream"
-#include "iostream"
+#include <vector>
+#include <fstream>
 #include "nodo.h"
-#include "vector"
-#include "stack"
 
 class Maze {
 public:
   Maze(std::fstream& fichero_entrada);
+  bool SolveMaze();
   void FuncionCoste(Nodo* nodo);
   int CosteAcumulado(Nodo* nodo);
   int FuncionHeuristica(Nodo* nodo);

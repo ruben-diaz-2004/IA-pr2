@@ -12,7 +12,6 @@
 #ifndef _NODO_H
 #define _NODO_H
 
-#include <vector>
 
 class Nodo {
 public:
