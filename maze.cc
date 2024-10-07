@@ -17,6 +17,7 @@
 Maze::Maze(std::fstream& fichero_entrada) {
   fichero_entrada >> n_filas_;
   fichero_entrada >> n_columnas_;
+  std::cout << "Filas: " << n_filas_ << " Columnas: " << n_columnas_ << std::endl;
   std::string linea;
   std::vector<int> fila;
   std::getline(fichero_entrada, linea);
@@ -40,6 +41,8 @@ Maze::Maze(std::fstream& fichero_entrada) {
       }
     }
   }
+  // Hacer que el fichero vuelva al principio
+  fichero_entrada.clear();
 }
 
 
@@ -53,6 +56,7 @@ bool Maze::SolveMaze() {
     if (nodo_actual->GetIdentificador() == fin_) {
       std::cout << "Camino encontrado" << std::endl;
       ReconstruirCamino(nodo_actual);
+      EliminaNodos();
       return true;
     }
     for (int i{-1}; i <= 1; ++i) {
@@ -84,6 +88,9 @@ bool Maze::SolveMaze() {
       }
     }
   }
+  std::cout << "No se ha encontrado camino" << std::endl;
+  EliminaNodos();
+  return false;
 }
 
 
@@ -156,7 +163,7 @@ void Maze::PrintMaze() {
           std::cout << "#";
           break;
         case 2:
-          std::cout << "·";
+          std::cout << ".";
           break;
         case 3:
           std::cout << "S";
@@ -201,4 +208,28 @@ int Maze::FuncionHeuristica(Nodo* nodo) {
   // std::cout << "Heuristica: " << coste << std::endl;
   nodo->SetHeuristica(coste);
   return coste;
+}
+
+
+void Maze::CambiarES(const int& inicio_i, const int& inicio_j, const int& fin_i, const int& fin_j) {
+  maze_[inicio_.first][inicio_.second] = 0;
+  maze_[fin_.first][fin_.second] = 0;
+  inicio_ = std::make_pair(inicio_i, inicio_j);
+  fin_ = std::make_pair(fin_i, fin_j);
+  maze_[inicio_i][inicio_j] = 3;
+  maze_[fin_i][fin_j] = 4;
+}
+
+
+void Maze::EliminaNodos() {
+  for (int i = 0; i < nodos_abiertos_.size(); i++) {
+    // std::cout << "Borrando nodo abierto: (" << nodos_abiertos_[i]->GetIdentificador().first << ", " << nodos_abiertos_[i]->GetIdentificador().second << ")\n";
+    nodos_abiertos_[i]->SetPadre(nullptr);
+    delete nodos_abiertos_[i];
+  }
+  for (int i = 0; i < nodos_cerrados_.size(); i++) {
+    // std::cout << "Borrando nodo cerrado: (" << nodos_cerrados_[i]->GetIdentificador().first << ", " << nodos_cerrados_[i]->GetIdentificador().second << ")\n";
+    nodos_cerrados_[i]->SetPadre(nullptr);
+    delete nodos_cerrados_[i];
+  }
 }

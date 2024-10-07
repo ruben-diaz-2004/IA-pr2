@@ -28,6 +28,8 @@ public:
   void PrintMaze();
   Nodo* BuscarNodoMenorCoste();
   void ReconstruirCamino(Nodo* nodo);
+  void CambiarES(const int& inicio_i, const int& inicio_j, const int& fin_i, const int& fin_j);
+  void EliminaNodos();
 private:
   std::pair<int,int> inicio_;
   std::pair<int,int> fin_;
