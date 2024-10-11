@@ -16,23 +16,36 @@
 
 int main(int argc, char* argv[]) {
   std::fstream fichero_de_entrada{argv[1]};
-  std::fstream fichero_de_entrada_2{argv[1]};
-
-  Maze maze(fichero_de_entrada);
+  int control{1};
+  std::cout << "Elige la heurística a utilizar: " << std::endl;
+  std::cout << "1. Distancia de Manhattan" << std::endl;
+  std::cout << "2. Distancia de Chebyshev" << std::endl;
+  std::cout << "3. Distancia Euclídea P" << std::endl;
+  std::cout << "4. Distancia de Canberra" << std::endl;
+  std::cin >> control;
+  if (control < 1 || control > 4) {
+    std::cout << "Opción no válida" << std::endl;
+    return 0;
+  }
+  Maze maze(fichero_de_entrada, control);
   maze.SolveMaze();
   maze.PrintMaze();
 
-  std::cout << "Desea cambiar la entrada/salida del laberinto? (s/n)" << std::endl;
-  char respuesta;
-  std::cin >> respuesta;
-  if (respuesta == 's') {
-    std::cout << "Introduzca la nueva entrada y salida del laberinto: " << std::endl;
-    int inicio_i, inicio_j, fin_i, fin_j;
-    std::cin >> inicio_i >> inicio_j >> fin_i >> fin_j;
-    Maze new_maze(fichero_de_entrada_2);
-    new_maze.CambiarES(inicio_i, inicio_j, fin_i, fin_j);
-    new_maze.SolveMaze();
-    new_maze.PrintMaze();
+  bool running = true;
+  while (running) {
+    std::cout << "Desea cambiar la entrada/salida del laberinto? (s/n)" << std::endl;
+    char respuesta;
+    std::cin >> respuesta;
+    if (respuesta == 's') {
+      std::cout << "Introduzca la nueva entrada y salida del laberinto: " << std::endl;
+      int inicio_i, inicio_j, fin_i, fin_j;
+      std::cin >> inicio_i >> inicio_j >> fin_i >> fin_j;
+      maze.CambiarES(inicio_i, inicio_j, fin_i, fin_j);
+      maze.SolveMaze();
+      maze.PrintMaze();
+    } else {
+      running = false;
+    }
   }
 
   return 0;

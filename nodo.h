@@ -32,7 +32,7 @@ private:
   position identificador_;
   double coste_;
   int coste_movimiento_;
-  int heuristica_;
+  double heuristica_;
   Nodo* padre_;
 };
 

@@ -18,11 +18,11 @@
 
 class Maze {
 public:
-  Maze(std::fstream& fichero_entrada);
+  Maze(std::fstream& fichero_entrada, const int& control);
   bool SolveMaze();
   void FuncionCoste(Nodo* nodo);
   int CosteAcumulado(Nodo* nodo);
-  int FuncionHeuristica(Nodo* nodo);
+  double FuncionHeuristica(Nodo* nodo, const int& control);
   Nodo* NodoAbierto(int i, int j); // for each nodo in nodos_abiertos: if nodo.pos_i == i && nodo.pos_j == j return nodo;
   Nodo* NodoCerrado(int i, int j);
   void PrintMaze();
@@ -30,9 +30,11 @@ public:
   void ReconstruirCamino(Nodo* nodo);
   void CambiarES(const int& inicio_i, const int& inicio_j, const int& fin_i, const int& fin_j);
   void EliminaNodos();
+  bool MismaFilaColumna(Nodo* nodo_actual, Nodo* nodo_vecino);
 private:
   std::pair<int,int> inicio_;
   std::pair<int,int> fin_;
+  int control_;
   // Imprimimos la salida por un fichero
   // std::ofstream fichero_salida{"salida.txt"};
   int n_filas_;
@@ -40,7 +42,9 @@ private:
   std::vector<std::vector<int>> maze_;
   std::vector<Nodo*> nodos_abiertos_;
   std::vector<Nodo*> nodos_cerrados_;
-
+  int generados_;
+  int inspeccionados_;
+  double coste_final_;
 };
 
 

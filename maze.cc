@@ -13,8 +13,9 @@
 #include <iostream>
 #include <fstream>
 #include "maze.h"
+#include <cmath>
 
-Maze::Maze(std::fstream& fichero_entrada) {
+Maze::Maze(std::fstream& fichero_entrada, const int& control) : control_{control}, generados_{0}, inspeccionados_{0}, coste_final_{0} {
   fichero_entrada >> n_filas_;
   fichero_entrada >> n_columnas_;
   std::cout << "Filas: " << n_filas_ << " Columnas: " << n_columnas_ << std::endl;
@@ -41,8 +42,8 @@ Maze::Maze(std::fstream& fichero_entrada) {
       }
     }
   }
-  // Hacer que el fichero vuelva al principio
-  fichero_entrada.clear();
+  std::cout << "S: (" << inicio_.first << ", " << inicio_.second << ")\n";
+  std::cout << "E: (" << fin_.first << ", " << fin_.second << ")\n";
 }
 
 
@@ -53,8 +54,10 @@ bool Maze::SolveMaze() {
   while(!nodos_abiertos_.empty()) {
     Nodo* nodo_actual = BuscarNodoMenorCoste();
     nodos_cerrados_.push_back(nodo_actual);
+    inspeccionados_++;
     if (nodo_actual->GetIdentificador() == fin_) {
       std::cout << "Camino encontrado" << std::endl;
+      coste_final_ = nodo_actual->GetCoste();
       ReconstruirCamino(nodo_actual);
       EliminaNodos();
       return true;
@@ -76,15 +79,18 @@ bool Maze::SolveMaze() {
           if (nodo_vecino == nullptr) {
             nodo_vecino = new Nodo(std::make_pair(nodo_actual->GetIdentificador().first + i, nodo_actual->GetIdentificador().second + j), nodo_actual);
             nodos_abiertos_.push_back(nodo_vecino);
+            generados_++;
             FuncionCoste(nodo_vecino);
           }
         } else {
-          if (nodo_actual->GetCosteMovimiento() + 5 < nodo_vecino->GetCosteMovimiento()) { // Recalcular coste 
+          if (MismaFilaColumna(nodo_actual, nodo_vecino) && nodo_actual->GetCosteMovimiento() + 5 < nodo_vecino->GetCosteMovimiento()) {
             nodo_vecino->SetPadre(nodo_actual);
             nodo_vecino->SetCoste(nodo_actual->GetCoste() + 5);
-            FuncionCoste(nodo_vecino);
+          } else if (nodo_actual->GetCosteMovimiento() + 7 < nodo_vecino->GetCosteMovimiento()) {
+                nodo_vecino->SetPadre(nodo_actual);
+                nodo_vecino->SetCoste(nodo_actual->GetCoste() + 7);
+            }
           }
-        }
       }
     }
   }
@@ -164,6 +170,7 @@ void Maze::PrintMaze() {
           break;
         case 2:
           std::cout << ".";
+          maze_[i][j] = 0;
           break;
         case 3:
           std::cout << "S";
@@ -178,11 +185,14 @@ void Maze::PrintMaze() {
     }
     std::cout << std::endl;
   }
+  std::cout << "Coste: " << coste_final_ << std::endl;
+  std::cout << "Nodos generados: " << generados_ << std::endl;
+  std::cout << "Nodos inspeccionados: " << inspeccionados_ << std::endl;
 }
 
 
 void Maze::FuncionCoste(Nodo* nodo) {
-  nodo->SetCoste(CosteAcumulado(nodo) + FuncionHeuristica(nodo));
+  nodo->SetCoste(CosteAcumulado(nodo) + FuncionHeuristica(nodo, control_));
 }
 
 
@@ -203,9 +213,27 @@ int Maze::CosteAcumulado(Nodo* nodo) {
 }
 
 
-int Maze::FuncionHeuristica(Nodo* nodo) {
-  int coste = (abs(nodo->GetIdentificador().first - fin_.first) + abs(nodo->GetIdentificador().second - fin_.second)) * 3;
-  // std::cout << "Heuristica: " << coste << std::endl;
+double Maze::FuncionHeuristica(Nodo* nodo, const int& control) {
+  double coste{0};
+  switch (control) {
+    case 1:
+    // Distancia de Manhattan
+    coste = (abs(nodo->GetIdentificador().first - fin_.first) + abs(nodo->GetIdentificador().second - fin_.second)) * 3;
+    break;
+    case 2:
+    // Distancia de Chebyshev o distancia del rey
+    coste = std::max(abs(nodo->GetIdentificador().first - fin_.first), abs(nodo->GetIdentificador().second - fin_.second)) * 5;
+    break;
+    coste = ((abs(nodo->GetIdentificador().first - fin_.first) / (abs(nodo->GetIdentificador().first) + abs(fin_.first))) + (abs(nodo->GetIdentificador().second - fin_.second) / (abs(nodo->GetIdentificador().second) + abs(fin_.second)))) * 3;
+    case 3:
+    // Distancia euclidea p, p = 5
+    coste = pow(pow(nodo->GetIdentificador().first - fin_.first, 5) + pow(nodo->GetIdentificador().second - fin_.second, 5), 0.2) * 4; // Comprobar si es admisible
+    break;
+    case 4:
+    // Distancia de Canberra
+    coste = ((abs(nodo->GetIdentificador().first - fin_.first) / (abs(nodo->GetIdentificador().first) + abs(fin_.first))) + (abs(nodo->GetIdentificador().second - fin_.second) / (abs(nodo->GetIdentificador().second) + abs(fin_.second)))) * 3;
+    break;
+  }
   nodo->SetHeuristica(coste);
   return coste;
 }
@@ -227,9 +255,19 @@ void Maze::EliminaNodos() {
     nodos_abiertos_[i]->SetPadre(nullptr);
     delete nodos_abiertos_[i];
   }
+  nodos_abiertos_.clear();
   for (int i = 0; i < nodos_cerrados_.size(); i++) {
     // std::cout << "Borrando nodo cerrado: (" << nodos_cerrados_[i]->GetIdentificador().first << ", " << nodos_cerrados_[i]->GetIdentificador().second << ")\n";
     nodos_cerrados_[i]->SetPadre(nullptr);
     delete nodos_cerrados_[i];
   }
+  nodos_cerrados_.clear();
+}
+
+
+bool Maze::MismaFilaColumna(Nodo* nodo_actual, Nodo* nodo_vecino) {
+  if (nodo_actual->GetIdentificador().first == nodo_vecino->GetIdentificador().first || nodo_actual->GetIdentificador().second == nodo_vecino->GetIdentificador().second) {
+    return true;
+  }
+  return false;
 }
