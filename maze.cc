@@ -54,6 +54,7 @@ bool Maze::SolveMaze() {
   while(!nodos_abiertos_.empty()) {
     Nodo* nodo_actual = BuscarNodoMenorCoste();
     nodos_cerrados_.push_back(nodo_actual);
+    std::cout << "Nodo actual: (" << nodo_actual->GetIdentificador().first << ", " << nodo_actual->GetIdentificador().second << ")" << std::endl;
     inspeccionados_++;
     if (nodo_actual->GetIdentificador() == fin_) {
       std::cout << "Camino encontrado" << std::endl;
@@ -74,22 +75,26 @@ bool Maze::SolveMaze() {
           continue;
         }
         Nodo* nodo_vecino = NodoAbierto(nodo_actual->GetIdentificador().first + i, nodo_actual->GetIdentificador().second + j);
-        if (nodo_vecino == nullptr) {
+        if (nodo_vecino == nullptr) { // Si no está en nodos_abiertos
           nodo_vecino = NodoCerrado(nodo_actual->GetIdentificador().first + i, nodo_actual->GetIdentificador().second + j);
-          if (nodo_vecino == nullptr) {
+          if (nodo_vecino == nullptr) { // Si no está en nodos_cerrados
             nodo_vecino = new Nodo(std::make_pair(nodo_actual->GetIdentificador().first + i, nodo_actual->GetIdentificador().second + j), nodo_actual);
             nodos_abiertos_.push_back(nodo_vecino);
             generados_++;
             FuncionCoste(nodo_vecino);
           }
-        } else {
-          if (MismaFilaColumna(nodo_actual, nodo_vecino) && nodo_actual->GetCosteMovimiento() + 5 < nodo_vecino->GetCosteMovimiento()) {
-            nodo_vecino->SetPadre(nodo_actual);
-            nodo_vecino->SetCoste(nodo_actual->GetCoste() + 5);
-          } else if (nodo_actual->GetCosteMovimiento() + 7 < nodo_vecino->GetCosteMovimiento()) {
+        } else { // Si está en nodos_abiertos
+            std::cout << "Actualizando coste de (" << nodo_vecino->GetIdentificador().first << ", " << nodo_vecino->GetIdentificador().second << ")" << std::endl;
+            std::cout << "Coste actual: " << nodo_vecino->GetCoste() << std::endl;
+            if (MismaFilaColumna(nodo_actual, nodo_vecino) && nodo_actual->GetCosteMovimiento() + 5 < nodo_vecino->GetCosteMovimiento()) {
+              nodo_vecino->SetPadre(nodo_actual);
+              nodo_vecino->SetCoste(nodo_actual->GetCoste() + 5);
+            } else if (nodo_actual->GetCosteMovimiento() + 7 < nodo_vecino->GetCosteMovimiento()) {
                 nodo_vecino->SetPadre(nodo_actual);
                 nodo_vecino->SetCoste(nodo_actual->GetCoste() + 7);
-            }
+              }
+            std::cout << "Nuevo coste: " << nodo_vecino->GetCoste() << std::endl;
+            std::cout << "Nuevo padre: (" << nodo_vecino->GetPadre()->GetIdentificador().first << ", " << nodo_vecino->GetPadre()->GetIdentificador().second << ")" << std::endl;
           }
       }
     }
@@ -163,13 +168,13 @@ void Maze::PrintMaze() {
     for (int j = 0; j < n_columnas_; j++) {
       switch (maze_[i][j]) {
         case 0:
-          std::cout << " ";
+          std::cout << "-";
           break;
         case 1:
           std::cout << "#";
           break;
         case 2:
-          std::cout << ".";
+          std::cout << "*";
           maze_[i][j] = 0;
           break;
         case 3:
