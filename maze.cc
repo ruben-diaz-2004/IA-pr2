@@ -84,18 +84,11 @@ bool Maze::SolveMaze() {
             FuncionCoste(nodo_vecino);
           }
         } else { // Si está en nodos_abiertos
-            std::cout << "Actualizando coste de (" << nodo_vecino->GetIdentificador().first << ", " << nodo_vecino->GetIdentificador().second << ")" << std::endl;
-            std::cout << "Coste actual: " << nodo_vecino->GetCoste() << std::endl;
-            if (MismaFilaColumna(nodo_actual, nodo_vecino) && nodo_actual->GetCosteMovimiento() + 5 < nodo_vecino->GetCosteMovimiento()) {
-              nodo_vecino->SetPadre(nodo_actual);
-              nodo_vecino->SetCoste(nodo_actual->GetCoste() + 5);
-            } else if (nodo_actual->GetCosteMovimiento() + 7 < nodo_vecino->GetCosteMovimiento()) {
-                nodo_vecino->SetPadre(nodo_actual);
-                nodo_vecino->SetCoste(nodo_actual->GetCoste() + 7);
-              }
-            std::cout << "Nuevo coste: " << nodo_vecino->GetCoste() << std::endl;
-            std::cout << "Nuevo padre: (" << nodo_vecino->GetPadre()->GetIdentificador().first << ", " << nodo_vecino->GetPadre()->GetIdentificador().second << ")" << std::endl;
+          if (nodo_vecino->GetCosteMovimiento() > CalculaCoste(nodo_actual, nodo_vecino)) {
+            nodo_vecino->SetPadre(nodo_actual);
+            FuncionCoste(nodo_vecino);
           }
+        }
       }
     }
   }
@@ -104,6 +97,14 @@ bool Maze::SolveMaze() {
   return false;
 }
 
+
+int Maze::CalculaCoste(Nodo* nodo, Nodo* nodo_vecino) {
+  if (MismaFilaColumna(nodo, nodo_vecino)) {
+    return nodo->GetCosteMovimiento() + 5;
+  }
+  return nodo->GetCosteMovimiento() + 7;
+
+}
 
 
 void Maze::ReconstruirCamino(Nodo* nodo) {

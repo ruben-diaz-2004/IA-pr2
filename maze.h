@@ -31,6 +31,7 @@ public:
   void CambiarES(const int& inicio_i, const int& inicio_j, const int& fin_i, const int& fin_j);
   void EliminaNodos();
   bool MismaFilaColumna(Nodo* nodo_actual, Nodo* nodo_vecino);
+  int CalculaCoste(Nodo* nodo, Nodo* nodo_vecino);
 private:
   std::pair<int,int> inicio_;
   std::pair<int,int> fin_;
