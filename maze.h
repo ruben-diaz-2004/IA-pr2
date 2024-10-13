@@ -43,8 +43,6 @@ private:
   std::vector<std::vector<int>> maze_;
   std::vector<Nodo*> nodos_abiertos_;
   std::vector<Nodo*> nodos_cerrados_;
-  int generados_;
-  int inspeccionados_;
   double coste_final_;
 };
 

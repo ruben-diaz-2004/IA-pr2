@@ -15,10 +15,10 @@
 #include "maze.h"
 #include <cmath>
 
-Maze::Maze(std::fstream& fichero_entrada, const int& control) : control_{control}, generados_{0}, inspeccionados_{0}, coste_final_{0} {
+Maze::Maze(std::fstream& fichero_entrada, const int& control) : control_{control}, coste_final_{0} {
   fichero_entrada >> n_filas_;
   fichero_entrada >> n_columnas_;
-  std::cout << "Filas: " << n_filas_ << " Columnas: " << n_columnas_ << std::endl;
+  fichero_salida << "Filas: " << n_filas_ << " Columnas: " << n_columnas_ << std::endl;
   std::string linea;
   std::vector<int> fila;
   std::getline(fichero_entrada, linea);
@@ -42,8 +42,8 @@ Maze::Maze(std::fstream& fichero_entrada, const int& control) : control_{control
       }
     }
   }
-  std::cout << "S: (" << inicio_.first << ", " << inicio_.second << ")\n";
-  std::cout << "E: (" << fin_.first << ", " << fin_.second << ")\n";
+  fichero_salida << "S: (" << inicio_.first << ", " << inicio_.second << ")\n";
+  fichero_salida << "E: (" << fin_.first << ", " << fin_.second << ")\n";
 }
 
 
@@ -54,10 +54,9 @@ bool Maze::SolveMaze() {
   while(!nodos_abiertos_.empty()) {
     Nodo* nodo_actual = BuscarNodoMenorCoste();
     nodos_cerrados_.push_back(nodo_actual);
-    std::cout << "Nodo actual: (" << nodo_actual->GetIdentificador().first << ", " << nodo_actual->GetIdentificador().second << ")" << std::endl;
-    inspeccionados_++;
+    // std::cout << "Nodo actual: (" << nodo_actual->GetIdentificador().first << ", " << nodo_actual->GetIdentificador().second << ")" << std::endl;
     if (nodo_actual->GetIdentificador() == fin_) {
-      std::cout << "Camino encontrado" << std::endl;
+      fichero_salida << "Camino encontrado" << std::endl;
       coste_final_ = nodo_actual->GetCoste();
       ReconstruirCamino(nodo_actual);
       EliminaNodos();
@@ -80,7 +79,6 @@ bool Maze::SolveMaze() {
           if (nodo_vecino == nullptr) { // Si no está en nodos_cerrados
             nodo_vecino = new Nodo(std::make_pair(nodo_actual->GetIdentificador().first + i, nodo_actual->GetIdentificador().second + j), nodo_actual);
             nodos_abiertos_.push_back(nodo_vecino);
-            generados_++;
             FuncionCoste(nodo_vecino);
           }
         } else { // Si está en nodos_abiertos
@@ -92,7 +90,7 @@ bool Maze::SolveMaze() {
       }
     }
   }
-  std::cout << "No se ha encontrado camino" << std::endl;
+  fichero_salida << "No se ha encontrado camino" << std::endl;
   EliminaNodos();
   return false;
 }
@@ -131,14 +129,6 @@ Nodo* Maze::BuscarNodoMenorCoste() {
   nodos_abiertos_.erase(nodos_abiertos_.begin() + index);
   return nodo_menor_coste;
 }
-// void Maze::PrintMaze() {
-//   for (int i = 0; i < n_filas_; i++) {
-//     for (int j = 0; j < n_columnas_; j++) {
-//       std::cout << maze_[i][j];
-//     }
-//     std::cout << std::endl;
-//   }
-// }
 
 
 
@@ -169,7 +159,7 @@ void Maze::PrintMaze() {
     for (int j = 0; j < n_columnas_; j++) {
       switch (maze_[i][j]) {
         case 0:
-          fichero_salida << " ";
+          fichero_salida << "-";
           break;
         case 1:
           fichero_salida << "■";
@@ -192,9 +182,6 @@ void Maze::PrintMaze() {
     }
     fichero_salida << std::endl;
   }
-  std::cout << "Coste: " << coste_final_ << std::endl;
-  std::cout << "Nodos generados: " << generados_ << std::endl;
-  std::cout << "Nodos inspeccionados: " << inspeccionados_ << std::endl;
 }
 
 
@@ -257,6 +244,10 @@ void Maze::CambiarES(const int& inicio_i, const int& inicio_j, const int& fin_i,
 
 
 void Maze::EliminaNodos() {
+  fichero_salida << "Nodos generados: " <<  nodos_abiertos_.size() + nodos_cerrados_.size() << std::endl;
+  fichero_salida << "Nodos inspeccionados: " << nodos_cerrados_.size() << std::endl;
+  fichero_salida << "Coste: " << coste_final_ << std::endl;
+
   for (int i = 0; i < nodos_abiertos_.size(); i++) {
     // std::cout << "Borrando nodo abierto: (" << nodos_abiertos_[i]->GetIdentificador().first << ", " << nodos_abiertos_[i]->GetIdentificador().second << ")\n";
     nodos_abiertos_[i]->SetPadre(nullptr);
