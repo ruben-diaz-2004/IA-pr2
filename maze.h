@@ -37,7 +37,7 @@ private:
   std::pair<int,int> fin_;
   int control_;
   // Imprimimos la salida por un fichero
-  // std::ofstream fichero_salida{"salida.txt"};
+  std::ofstream fichero_salida{"salida.txt"};
   int n_filas_;
   int n_columnas_;
   std::vector<std::vector<int>> maze_;

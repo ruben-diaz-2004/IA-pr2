@@ -169,27 +169,28 @@ void Maze::PrintMaze() {
     for (int j = 0; j < n_columnas_; j++) {
       switch (maze_[i][j]) {
         case 0:
-          std::cout << "-";
+          fichero_salida << " ";
           break;
         case 1:
-          std::cout << "#";
+          fichero_salida << "■";
           break;
         case 2:
-          std::cout << "*";
+          fichero_salida << "*";
           maze_[i][j] = 0;
           break;
         case 3:
-          std::cout << "S";
+          fichero_salida << "S";
           break;
         case 4:
-          std::cout << "F";
+          fichero_salida << "F";
           break;
         default:
-          std::cout << " ";
+          fichero_salida << " ";
           break;
       }
+      fichero_salida << " ";
     }
-    std::cout << std::endl;
+    fichero_salida << std::endl;
   }
   std::cout << "Coste: " << coste_final_ << std::endl;
   std::cout << "Nodos generados: " << generados_ << std::endl;
