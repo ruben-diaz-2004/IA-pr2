@@ -32,6 +32,7 @@ public:
   void EliminaNodos();
   bool MismaFilaColumna(Nodo* nodo_actual, Nodo* nodo_vecino);
   int CalculaCoste(Nodo* nodo, Nodo* nodo_vecino);
+  void ImprimeNodos();
 private:
   std::pair<int,int> inicio_;
   std::pair<int,int> fin_;
@@ -44,6 +45,7 @@ private:
   std::vector<Nodo*> nodos_abiertos_;
   std::vector<Nodo*> nodos_cerrados_;
   double coste_final_;
+  int iteraciones_;
 };
 
 

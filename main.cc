@@ -40,7 +40,12 @@ int main(int argc, char* argv[]) {
       std::cout << "Introduzca la nueva entrada y salida del laberinto: " << std::endl;
       int inicio_i, inicio_j, fin_i, fin_j;
       std::cin >> inicio_i >> inicio_j >> fin_i >> fin_j;
-      maze.CambiarES(inicio_i, inicio_j, fin_i, fin_j);
+      try {
+        maze.CambiarES(inicio_i, inicio_j, fin_i, fin_j);
+      } catch (std::invalid_argument& error) {
+        std::cout << error.what() << std::endl;
+        continue;
+      }
       maze.SolveMaze();
       maze.PrintMaze();
     } else {
